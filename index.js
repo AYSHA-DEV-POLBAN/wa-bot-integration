@@ -73,39 +73,20 @@ app.get('/create-session', (req, res) => {
 
 function start(client) {
   client.onMessage(async (message) => {
-    if (message.body === 'Hi' && message.isGroupMsg === false) {
-      client
-        .sendText(message.from, 'Welcome Venom 🕷')
-        .then((result) => {
-          console.log('Result: ', result); //return object success
-        })
-        .catch((erro) => {
-          console.error('Error when sending: ', erro); //return object error
-        });
-    } else if (message.body.toLocaleLowerCase() === 'selamat pagi' && message.isGroupMsg === false) {
-      client
-        .sendText(message.from, 'Selamat Pagi!')
-        .then((result) => {
-          console.log('Result: ', result); //return object success
-        })
-        .catch((erro) => {
-          console.error('Error when sending: ', erro); //return object error
-        });
-    } else if (message.body.toLocaleLowerCase() === 'cek antrian' && message.isGroupMsg === false) {
-      client
-        .sendText(message.from, 'Antrian Pendaftaran Umum *A30*, Antrian Pendaftaran Asuransi *B40*, Antrian Pendaftaran BPJS *C101*')
-        .then((result) => {
-          console.log('Result: ', result); //return object success
-        })
-        .catch((erro) => {
-          console.error('Error when sending: ', erro); //return object error
-        });
-    } else {
+    // console.log("message");
+    // console.log(message.from);
+    const number = message.from;
+    const whatsapp_number = number.split('@')[0];
+
+    if (message.type == 'chat' && message.isGroupMsg == false) {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/ask_question/', { question: message.body });
-        console.log('Response:', response.data);
+        const response = await axios.post('http://localhost:8001/api/v1/conversation/create', { whatsapp_number: whatsapp_number, message_text: message.body });
+        console.log('Response');
+        console.log(response.data);
+        // console.log('Response sistem');
+        // console.log(response.data.data.response_system);
         client
-          .sendText(message.from, response.data.response)
+          .sendText(message.from, response.data.data.response_system)
           .then((result) => {
             console.log('Result: ', result); //return object success
           })
@@ -115,6 +96,15 @@ function start(client) {
       } catch (error) {
         console.error('Error:', error);
       }
+    } else {
+      client
+        .sendText(message.from, 'Mohon maaf hanya dapat menerima pesan dalam bentuk text')
+        .then((result) => {
+          console.log('Result: ', result); //return object success
+        })
+        .catch((erro) => {
+          console.error('Error when sending: ', erro); //return object error
+        });
     }
   });
 }
