@@ -5,9 +5,12 @@ const { v4: uuidv4 } = require('uuid'); // Import uuid module
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+var cors = require("cors");
 
 const app = express();
 const port = 8002;
+
+app.use(cors());
 
 app.use(express.json()); // Middleware untuk menguraikan JSON
 
